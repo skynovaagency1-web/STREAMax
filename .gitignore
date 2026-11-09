@@ -8,3 +8,8 @@ coverage
 *.tsbuildinfo
 .DS_Store
 next-env.d.ts
+
+# Cloudflare
+.open-next
+.wrangler
+.dev.vars

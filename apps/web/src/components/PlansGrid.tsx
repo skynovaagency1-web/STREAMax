@@ -1,12 +1,13 @@
 "use client";
 
+import Link from "next/link";
 import { useState } from "react";
 import { PLANS, formatPrice } from "@streamax/core";
 import { usePlan } from "./PlanProvider";
 
 export function PlansGrid() {
   const [yearly, setYearly] = useState(false);
-  const { plan: current, setPlan } = usePlan();
+  const { plan: current, setPlan, mode, billing } = usePlan();
 
   return (
     <>
@@ -53,26 +54,66 @@ export function PlansGrid() {
                   </li>
                 ))}
               </ul>
-              <button
-                onClick={() => setPlan(p.id)}
-                disabled={isCurrent}
-                className={`mt-8 rounded-2xl px-5 py-3 font-semibold transition disabled:cursor-default ${
-                  isCurrent
-                    ? "border border-white/15 text-mist"
-                    : popular
-                      ? "brand-gradient text-ink-950 hover:opacity-90"
-                      : "bg-white text-ink-950 hover:bg-white/90"
-                }`}
-              >
-                {isCurrent ? "Current plan" : p.id === "free" ? "Switch to Free" : `Choose ${p.name}`}
-              </button>
+              {mode === "live" ? (
+                <PlanAction planId={p.id} name={p.name} yearly={yearly} isCurrent={isCurrent} popular={popular} billing={billing} />
+              ) : (
+                <button
+                  onClick={() => setPlan(p.id)}
+                  disabled={isCurrent}
+                  className={buttonClass(isCurrent, popular)}
+                >
+                  {isCurrent ? "Current plan" : p.id === "free" ? "Switch to Free" : `Choose ${p.name}`}
+                </button>
+              )}
             </div>
           );
         })}
       </div>
-      <p className="mt-4 text-center text-xs text-mist/70">
-        Demo mode: choosing a plan switches it instantly so you can preview the experience. Checkout via Stripe comes next.
-      </p>
+      {mode === "demo" && (
+        <p className="mt-4 text-center text-xs text-mist/70">
+          Demo mode: choosing a plan switches it instantly so you can preview the experience.
+        </p>
+      )}
     </>
+  );
+}
+
+function buttonClass(isCurrent: boolean, popular: boolean) {
+  return `mt-8 block w-full rounded-2xl px-5 py-3 text-center font-semibold transition disabled:cursor-default ${
+    isCurrent
+      ? "border border-white/15 text-mist"
+      : popular
+        ? "brand-gradient text-ink-950 hover:opacity-90"
+        : "bg-white text-ink-950 hover:bg-white/90"
+  }`;
+}
+
+/** Live mode: paid plans go to Stripe Checkout; Free and plan changes go through the account page. */
+function PlanAction({
+  planId,
+  name,
+  yearly,
+  isCurrent,
+  popular,
+  billing,
+}: {
+  planId: string;
+  name: string;
+  yearly: boolean;
+  isCurrent: boolean;
+  popular: boolean;
+  billing: boolean;
+}) {
+  if (isCurrent) return <button disabled className={buttonClass(true, popular)}>Current plan</button>;
+  if (planId === "free") {
+    return <Link href="/account" className={buttonClass(false, popular)}>Manage plan</Link>;
+  }
+  if (!billing) return <button disabled className={buttonClass(true, popular)}>Coming soon</button>;
+  return (
+    <form action="/api/checkout" method="post">
+      <input type="hidden" name="plan" value={planId} />
+      <input type="hidden" name="interval" value={yearly ? "yearly" : "monthly"} />
+      <button className={buttonClass(false, popular)}>Choose {name}</button>
+    </form>
   );
 }
