@@ -16,7 +16,7 @@ const NAV = [
 
 export function Header() {
   const pathname = usePathname();
-  const { plan } = usePlan();
+  const { plan, mode, signedIn } = usePlan();
 
   return (
     <header className="sticky top-0 z-40 px-4 pt-4 sm:px-8">
@@ -51,6 +51,14 @@ export function Header() {
               <path d="m20 20-3.5-3.5" />
             </svg>
           </Link>
+          {mode === "live" && (
+            <Link
+              href={signedIn ? "/account" : "/login"}
+              className="rounded-xl px-3 py-2 text-sm text-mist transition hover:bg-white/10 hover:text-white"
+            >
+              {signedIn ? "Account" : "Sign in"}
+            </Link>
+          )}
           {plan === "free" ? (
             <Link
               href="/plans"
