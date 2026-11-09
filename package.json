@@ -1,0 +1,11 @@
+{
+  "name": "streamax",
+  "private": true,
+  "workspaces": ["apps/*", "packages/*"],
+  "scripts": {
+    "dev": "npm run dev -w @streamax/web",
+    "build": "npm run build -w @streamax/web",
+    "test": "npm run test -w @streamax/core",
+    "typecheck": "npm run typecheck --workspaces --if-present"
+  }
+}
