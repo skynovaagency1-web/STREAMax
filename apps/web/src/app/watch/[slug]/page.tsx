@@ -20,11 +20,11 @@ export default async function WatchPage({
   const episode = season?.episodes.find((x) => x.number === Number(e ?? 1));
 
   return (
-    <div className="mx-auto max-w-[1400px] px-4 pt-6 sm:px-8">
+    <>
       <Player
         title={t}
         subtitle={episode && season ? `S${season.number} E${episode.number} · ${episode.title}` : undefined}
       />
-    </div>
+    </>
   );
 }
