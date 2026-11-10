@@ -65,3 +65,22 @@ describe("ads and plans", () => {
     expect(canWatch("premium", "standard")).toBe(true);
   });
 });
+
+import { CLASSICS } from "./classics";
+import { TITLES, getTitleBySlug } from "./catalog";
+
+describe("public-domain classics", () => {
+  it("are free, pre-1931, and stream an archive.org MP4", () => {
+    for (const t of CLASSICS) {
+      expect(t.minPlan).toBe("free");
+      expect(t.year).toBeLessThan(1931);
+      expect(t.streamUrl).toMatch(/^https:\/\/archive\.org\/download\/.+\.mp4$/);
+      expect(t.source.type).toBe("public-domain");
+    }
+  });
+  it("have unique ids and slugs across the whole catalog", () => {
+    expect(new Set(TITLES.map((t) => t.id)).size).toBe(TITLES.length);
+    expect(new Set(TITLES.map((t) => t.slug)).size).toBe(TITLES.length);
+    expect(getTitleBySlug("nosferatu")?.director).toBe("F. W. Murnau");
+  });
+});

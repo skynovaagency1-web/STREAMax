@@ -24,18 +24,22 @@ export function KeyArt({
 
   return (
     <div
-      className={`grain relative overflow-hidden ${className}`}
+      className={`grain overflow-hidden ${/\b(absolute|fixed)\b/.test(className) ? "" : "relative"} ${className}`}
       style={{
-        backgroundImage: img
-          ? `url(${img})`
-          : `radial-gradient(circle at ${orbX}% ${orbY}%, ${to}cc 0%, transparent 45%), linear-gradient(${angle}deg, ${from} 0%, #07060d 85%)`,
+        // Real artwork sits on top of the generated gradient, which shows if the image fails to load.
+        backgroundImage: [
+          img ? `url(${img})` : null,
+          `radial-gradient(circle at ${orbX}% ${orbY}%, ${to}cc 0%, transparent 45%)`,
+          `linear-gradient(${angle}deg, ${from} 0%, #07060d 85%)`,
+        ]
+          .filter(Boolean)
+          .join(", "),
         backgroundSize: "cover",
         backgroundPosition: "center",
       }}
     >
       {!img && (
-        <>
-          <div
+        <div
             className="absolute rounded-full blur-2xl"
             style={{
               width: "70%",
@@ -45,10 +49,9 @@ export function KeyArt({
               background: `${from}55`,
             }}
           />
-          <div className="absolute inset-x-0 bottom-0 h-2/3 bg-gradient-to-t from-black/80 to-transparent" />
-        </>
       )}
-      {showName && !img && variant === "poster" && (
+      {(showName || !img) && <div className="absolute inset-x-0 bottom-0 h-2/3 bg-gradient-to-t from-black/85 to-transparent" />}
+      {showName && variant === "poster" && (
         <div className="absolute inset-x-0 bottom-0 p-3">
           <p className="font-display text-[0.65rem] tracking-[0.2em] text-white/60 uppercase">
             {title.kind === "series" ? "Series" : "Film"}
