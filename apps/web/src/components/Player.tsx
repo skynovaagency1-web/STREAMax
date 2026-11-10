@@ -18,6 +18,26 @@ export function Player({ title, subtitle }: { title: Title; subtitle?: string })
   const [ad, setAd] = useState<AdBreak | null>(null);
   const [remaining, setRemaining] = useState(0);
   const allowed = canWatch(plan, title.minPlan);
+  const backHref = `/title/${title.slug}`;
+
+  // Show the top bar on mouse move / tap, hide it after 3s of inactivity.
+  const [chrome, setChrome] = useState(true);
+  const hideTimer = useRef<ReturnType<typeof setTimeout>>(undefined);
+  function wake() {
+    setChrome(true);
+    clearTimeout(hideTimer.current);
+    hideTimer.current = setTimeout(() => setChrome(false), 3000);
+  }
+  useEffect(() => {
+    wake();
+    // Lock page scroll while the full-screen player is open.
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = prev;
+      clearTimeout(hideTimer.current);
+    };
+  }, []);
 
   // Attach the HLS stream.
   useEffect(() => {
@@ -79,7 +99,7 @@ export function Player({ title, subtitle }: { title: Title; subtitle?: string })
   if (!allowed) {
     const needed = getPlan(title.minPlan);
     return (
-      <div className="relative aspect-video overflow-hidden rounded-3xl ring-1 ring-white/10">
+      <div className="fixed inset-0 z-[60] overflow-hidden bg-black">
         <KeyArt title={title} variant="backdrop" className="absolute inset-0 opacity-60" />
         <div className="absolute inset-0 flex flex-col items-center justify-center bg-ink-950/70 p-6 text-center">
           <p className="text-sm tracking-wide text-amber uppercase">{needed.name} title</p>
@@ -91,25 +111,27 @@ export function Player({ title, subtitle }: { title: Title; subtitle?: string })
             See plans
           </Link>
         </div>
+        <div className="absolute top-4 left-4 sm:top-6 sm:left-6">
+          <BackButton href={backHref} />
+        </div>
       </div>
     );
   }
 
   return (
-    <div>
-      <div className="relative aspect-video overflow-hidden rounded-3xl bg-black ring-1 ring-white/10">
-        <video
-          ref={videoRef}
-          className="h-full w-full"
-          controls={!ad}
-          playsInline
-          autoPlay={!ad}
-          onTimeUpdate={onTimeUpdate}
-          poster={title.artwork.backdrop}
-        />
+    <div className="fixed inset-0 z-[60] bg-black" onMouseMove={wake} onTouchStart={wake}>
+      <video
+        ref={videoRef}
+        className="h-full w-full object-contain"
+        controls={!ad}
+        playsInline
+        autoPlay={!ad}
+        onTimeUpdate={onTimeUpdate}
+        poster={title.artwork.backdrop}
+      />
         {ad && (
           <div className="absolute inset-0 flex flex-col items-center justify-center bg-gradient-to-br from-ink-800 to-ink-950 p-6 text-center">
-            <span className="absolute top-4 left-4 rounded-md bg-amber px-2 py-0.5 text-xs font-bold text-ink-950">
+            <span className="absolute top-5 right-5 z-10 rounded-md bg-amber px-2 py-0.5 text-xs font-bold text-ink-950">
               AD · {remaining}s
             </span>
             <p className="text-sm text-mist">Your show starts after this short break</p>
@@ -122,17 +144,36 @@ export function Player({ title, subtitle }: { title: Title; subtitle?: string })
             </Link>
           </div>
         )}
-      </div>
-      <div className="mt-5 flex flex-wrap items-end justify-between gap-4">
-        <div>
-          <h1 className="font-display text-2xl font-bold">{title.name}</h1>
-          {subtitle && <p className="text-mist">{subtitle}</p>}
+      {/* Top bar: back button and title, fades out while the film plays. */}
+      <div
+        className={`absolute inset-x-0 top-0 flex items-start gap-4 bg-gradient-to-b from-black/80 to-transparent p-4 pb-16 transition-opacity duration-500 sm:p-6 ${
+          chrome || ad ? "opacity-100" : "pointer-events-none opacity-0"
+        }`}
+      >
+        <BackButton href={backHref} />
+        <div className="min-w-0 pt-1">
+          <h1 className="font-display truncate text-lg font-bold sm:text-2xl">{title.name}</h1>
+          <p className="truncate text-sm text-mist">
+            {subtitle ? `${subtitle} · ` : ""}
+            {getPlan(plan).name}
+            {getPlan(plan).ads && " · with ads"}
+          </p>
         </div>
-        <p className="text-sm text-mist">
-          Watching on <span className="text-white">{getPlan(plan).name}</span>
-          {getPlan(plan).ads && " · with ads"}
-        </p>
       </div>
     </div>
+  );
+}
+
+function BackButton({ href }: { href: string }) {
+  return (
+    <Link
+      href={href}
+      aria-label="Back"
+      className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-black/50 text-white ring-1 ring-white/20 backdrop-blur hover:bg-black/70 "
+    >
+      <svg viewBox="0 0 24 24" className="h-6 w-6" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M15 18l-6-6 6-6" />
+      </svg>
+    </Link>
   );
 }
