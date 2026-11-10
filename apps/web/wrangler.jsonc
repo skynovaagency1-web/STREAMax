@@ -2,6 +2,9 @@
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "streamax",
   "main": ".open-next/worker.js",
+  // Keep the public streamax.<account>.workers.dev URL and per-version preview URLs on.
+  "workers_dev": true,
+  "preview_urls": true,
   "compatibility_date": "2026-11-01",
   "compatibility_flags": ["nodejs_compat", "global_fetch_strictly_public"],
   "assets": { "directory": ".open-next/assets", "binding": "ASSETS" },
