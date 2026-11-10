@@ -14,23 +14,32 @@ import type { Title } from "./types";
  */
 
 const ia = (id: string, file: string) => `https://archive.org/download/${encodeURIComponent(id)}/${file}`;
-const tile = (id: string) => `https://archive.org/services/img/${encodeURIComponent(id)}`;
+/** A public-domain still from the film, served by Wikimedia Commons at the given width. */
+const still = (file: string, width: number) =>
+  `https://commons.wikimedia.org/wiki/Special:FilePath/${encodeURIComponent(file.replace(/ /g, "_"))}?width=${width}`;
 
 function classic(
   t: Omit<Title, "kind" | "source" | "minPlan" | "streamUrl" | "artwork"> & {
     archiveId: string;
     file: string;
+    /** Wikimedia Commons file name of a still from the film (public domain). */
+    stillFile: string;
     colors: [string, string];
   },
 ): Title {
-  const { archiveId, file, colors, ...rest } = t;
+  const { archiveId, file, stillFile, colors, ...rest } = t;
   return {
     ...rest,
     kind: "movie",
     source: { type: "public-domain", archiveId },
     minPlan: "free",
     streamUrl: ia(archiveId, file),
-    artwork: { from: colors[0], to: colors[1], poster: tile(archiveId) },
+    artwork: {
+      from: colors[0],
+      to: colors[1],
+      poster: still(stillFile, 500),
+      backdrop: still(stillFile, 1600),
+    },
   };
 }
 
@@ -48,6 +57,7 @@ export const CLASSICS: Title[] = [
     durationMin: 93,
     director: "F. W. Murnau",
     archiveId: "Nosferatu_most_complete_version_93_mins.",
+    stillFile: "Nosferatu (1922) - Count Orlok Standing In A Wooden Doorway.png",
     file: "Nosferatu_1922_Symphony_of_Horror_512kb.mp4",
     colors: ["#475569", "#020617"],
     featured: true,
@@ -65,6 +75,7 @@ export const CLASSICS: Title[] = [
     durationMin: 51,
     director: "Robert Wiene",
     archiveId: "DasKabinettdesDoktorCaligariTheCabinetofDrCaligari",
+    stillFile: "Publicity still for The Cabinet of Dr. Caligari (1920) 03.jpg",
     file: "The_Cabinet_of_Dr._Caligari_512kb.mp4",
     colors: ["#a16207", "#1c1917"],
   }),
@@ -81,6 +92,7 @@ export const CLASSICS: Title[] = [
     durationMin: 106,
     director: "Rupert Julian",
     archiveId: "ThePhantomoftheOpera",
+    stillFile: "Lon Chaney as The Phantom.jpg",
     file: "Phantom_of_the_Opera_512kb.mp4",
     colors: ["#7f1d1d", "#0c0a09"],
     featured: true,
@@ -98,6 +110,7 @@ export const CLASSICS: Title[] = [
     durationMin: 73,
     director: "Sergei Eisenstein",
     archiveId: "BattleshipPotemkin",
+    stillFile: "Battleship Potemkin-Ship portrait.jpg",
     file: "Battleship_Potemkin_512kb.mp4",
     colors: ["#334155", "#7f1d1d"],
   }),
@@ -114,6 +127,7 @@ export const CLASSICS: Title[] = [
     durationMin: 105,
     director: "Stuart Paton",
     archiveId: "20000LeaguesUndertheSea",
+    stillFile: "Jane Gail dans 20,000 leagues under.the.Sea.jpg",
     file: "20000_Leagues_Under_the_Sea_512kb.mp4",
     colors: ["#0e7490", "#082f49"],
   }),
@@ -130,6 +144,7 @@ export const CLASSICS: Title[] = [
     durationMin: 13,
     director: "J. Searle Dawley",
     archiveId: "FrankensteinfullMovie",
+    stillFile: "Frankenstein1910.jpg",
     file: "Frankenstein1910.mp4",
     colors: ["#57534e", "#1c1917"],
   }),
