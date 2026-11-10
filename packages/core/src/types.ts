@@ -13,7 +13,11 @@ export type Genre =
   | "Adventure";
 
 /** Who supplied the title: licensed by Streamax or uploaded by a creator. */
-export type TitleSource = { type: "licensed" } | { type: "creator"; creatorId: string };
+export type TitleSource =
+  | { type: "licensed" }
+  | { type: "creator"; creatorId: string }
+  /** Public-domain film. `archiveId` is its Internet Archive identifier. */
+  | { type: "public-domain"; archiveId: string };
 
 export interface Artwork {
   /** Two hex colours used to render generated key art until real posters are uploaded. */
@@ -54,8 +58,10 @@ export interface Title {
   source: TitleSource;
   /** Minimum plan required. "free" titles are playable with ads. */
   minPlan: PlanId;
-  /** HLS stream URL. Demo titles share a public test stream. */
+  /** Stream URL: HLS (.m3u8) or progressive MP4. Demo titles share a public test stream. */
   streamUrl: string;
+  /** Director credit, shown on the title page. */
+  director?: string;
   featured?: boolean;
   isNew?: boolean;
 }

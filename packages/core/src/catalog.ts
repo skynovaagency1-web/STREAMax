@@ -1,4 +1,5 @@
 import type { Creator, Episode, Row, Season, Title } from "./types";
+import { CLASSICS } from "./classics";
 
 /**
  * Demo catalogue. All titles are fictional placeholders so the app runs
@@ -27,7 +28,7 @@ function season(n: number, names: string[]): Season {
 
 const base = { streamUrl: DEMO_STREAM } as const;
 
-export const TITLES: Title[] = [
+const DEMO_TITLES: Title[] = [
   {
     ...base,
     id: "t1",
@@ -236,8 +237,11 @@ export const TITLES: Title[] = [
   },
 ];
 
+export const TITLES: Title[] = [...CLASSICS, ...DEMO_TITLES];
+
 export const ROWS: Row[] = [
-  { id: "trending", label: "Trending on Streamax", titleIds: ["t1", "t4", "t3", "t12", "t2", "t8", "t9"] },
+  { id: "classics", label: "Timeless classics · free to watch", titleIds: CLASSICS.map((t) => t.id) },
+  { id: "trending", label: "Trending on Streamax", titleIds: ["pd-nosferatu", "t1", "pd-phantom", "t4", "t3", "pd-caligari", "t12"] },
   { id: "new", label: "New this week", titleIds: TITLES.filter((t) => t.isNew).map((t) => t.id) },
   { id: "free", label: "Free to watch", titleIds: TITLES.filter((t) => t.minPlan === "free").map((t) => t.id) },
   {

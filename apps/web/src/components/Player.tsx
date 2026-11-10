@@ -7,7 +7,7 @@ import { usePlan } from "./PlanProvider";
 import { KeyArt } from "./KeyArt";
 
 /**
- * HLS player with ad breaks for the free tier.
+ * Video player (HLS or MP4) with ad breaks for the free tier.
  * Ads are simulated with a house promo for now; the next step is to request a
  * VAST tag (Google IMA SDK) at each break in `adSchedule`.
  */
@@ -24,7 +24,9 @@ export function Player({ title, subtitle }: { title: Title; subtitle?: string })
     const video = videoRef.current;
     if (!video || !allowed) return;
     let destroy: (() => void) | undefined;
-    if (video.canPlayType("application/vnd.apple.mpegurl")) {
+    const isHls = /\.m3u8($|\?)/.test(title.streamUrl);
+    if (!isHls || video.canPlayType("application/vnd.apple.mpegurl")) {
+      // Progressive MP4, or HLS on Safari/iOS which plays it natively.
       video.src = title.streamUrl;
     } else {
       import("hls.js").then(({ default: Hls }) => {

@@ -32,6 +32,9 @@ export default async function TitlePage({ params }: { params: Promise<{ slug: st
           <div className="max-w-2xl self-end">
             <div className="mb-3 flex items-center gap-2">
               <AccessBadge title={t} />
+              {t.source.type === "public-domain" && (
+                <span className="rounded-md bg-white/10 px-2 py-0.5 text-xs text-mist">Public domain classic</span>
+              )}
               {creator && (
                 <span className="rounded-md bg-violet/20 px-2 py-0.5 text-xs text-violet-soft">
                   Creator original · @{creator.handle}
@@ -42,6 +45,21 @@ export default async function TitlePage({ params }: { params: Promise<{ slug: st
             <p className="mt-2 text-lg text-white/80 italic">{t.tagline}</p>
             <div className="mt-4"><Meta title={t} /></div>
             <p className="mt-4 text-mist">{t.synopsis}</p>
+            {t.director && <p className="mt-2 text-sm text-mist">Directed by <span className="text-white">{t.director}</span></p>}
+            {t.source.type === "public-domain" && (
+              <p className="mt-1 text-xs text-mist/70">
+                Silent film. Video courtesy of the{" "}
+                <a
+                  href={`https://archive.org/details/${encodeURIComponent(t.source.archiveId)}`}
+                  className="underline hover:text-white"
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  Internet Archive
+                </a>
+                .
+              </p>
+            )}
             <div className="mt-6 flex flex-wrap items-center gap-3">
               <Link
                 href={`/watch/${t.slug}`}
