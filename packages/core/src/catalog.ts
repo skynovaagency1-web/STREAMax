@@ -1,5 +1,6 @@
 import type { Creator, Episode, Row, Season, Title } from "./types";
 import { CLASSICS } from "./classics";
+import { OPEN_MOVIES } from "./openMovies";
 
 /**
  * Demo catalogue. All titles are fictional placeholders so the app runs
@@ -237,11 +238,12 @@ const DEMO_TITLES: Title[] = [
   },
 ];
 
-export const TITLES: Title[] = [...CLASSICS, ...DEMO_TITLES];
+export const TITLES: Title[] = [...OPEN_MOVIES, ...CLASSICS, ...DEMO_TITLES];
 
 export const ROWS: Row[] = [
   { id: "classics", label: "Timeless classics · free to watch", titleIds: CLASSICS.map((t) => t.id) },
-  { id: "trending", label: "Trending on Streamax", titleIds: ["pd-nosferatu", "t1", "pd-phantom", "t4", "t3", "pd-caligari", "t12"] },
+  { id: "shorts", label: "Animated & sci-fi shorts · free", titleIds: OPEN_MOVIES.map((t) => t.id) },
+  { id: "trending", label: "Trending on Streamax", titleIds: ["cc-sprite-fright", "pd-nosferatu", "cc-charge", "pd-phantom", "cc-cosmos-laundromat", "t1", "cc-spring"] },
   { id: "new", label: "New this week", titleIds: TITLES.filter((t) => t.isNew).map((t) => t.id) },
   { id: "free", label: "Free to watch", titleIds: TITLES.filter((t) => t.minPlan === "free").map((t) => t.id) },
   {

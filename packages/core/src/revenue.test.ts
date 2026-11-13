@@ -84,3 +84,17 @@ describe("public-domain classics", () => {
     expect(getTitleBySlug("nosferatu")?.director).toBe("F. W. Murnau");
   });
 });
+
+describe("Creative Commons open movies", () => {
+  it("are free, credited and have real artwork", async () => {
+    const { OPEN_MOVIES } = await import("./openMovies");
+    expect(OPEN_MOVIES.length).toBeGreaterThanOrEqual(5);
+    for (const t of OPEN_MOVIES) {
+      expect(t.minPlan).toBe("free");
+      expect(t.source.type).toBe("creative-commons");
+      if (t.source.type === "creative-commons") expect(t.source.license).toMatch(/^CC BY/);
+      expect(t.artwork.poster).toMatch(/^https:\/\//);
+      expect(t.streamUrl).toMatch(/\.(mp4|webm)$/);
+    }
+  });
+});

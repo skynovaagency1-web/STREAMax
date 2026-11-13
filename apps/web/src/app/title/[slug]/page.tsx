@@ -60,6 +60,19 @@ export default async function TitlePage({ params }: { params: Promise<{ slug: st
                 .
               </p>
             )}
+            {t.source.type === "creative-commons" && (
+              <p className="mt-1 text-xs text-mist/70">
+                © {t.source.credit} · {t.source.license} ·{" "}
+                <a
+                  href={`https://archive.org/details/${encodeURIComponent(t.source.archiveId)}`}
+                  className="underline hover:text-white"
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  source
+                </a>
+              </p>
+            )}
             <div className="mt-6 flex flex-wrap items-center gap-3">
               <Link
                 href={`/watch/${t.slug}`}
