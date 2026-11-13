@@ -17,7 +17,9 @@ export type TitleSource =
   | { type: "licensed" }
   | { type: "creator"; creatorId: string }
   /** Public-domain film. `archiveId` is its Internet Archive identifier. */
-  | { type: "public-domain"; archiveId: string };
+  | { type: "public-domain"; archiveId: string }
+  /** Creative Commons film (e.g. Blender open movies): free to stream if credited. */
+  | { type: "creative-commons"; archiveId: string; license: string; credit: string };
 
 export interface Artwork {
   /** Two hex colours used to render generated key art until real posters are uploaded. */

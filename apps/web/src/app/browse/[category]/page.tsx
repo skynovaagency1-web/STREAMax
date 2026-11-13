@@ -4,6 +4,7 @@ import { PosterCard } from "@/components/PosterCard";
 
 const CATEGORIES: Record<string, { label: string; filter: (t: Title) => boolean }> = {
   classics: { label: "Timeless classics", filter: (t) => t.source.type === "public-domain" },
+  shorts: { label: "Animated & sci-fi shorts", filter: (t) => t.source.type === "creative-commons" },
   series: { label: "Series", filter: (t) => t.kind === "series" },
   movies: { label: "Movies", filter: (t) => t.kind === "movie" },
   free: { label: "Free to watch", filter: (t) => t.minPlan === "free" },
