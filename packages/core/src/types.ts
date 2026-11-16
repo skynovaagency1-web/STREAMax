@@ -10,7 +10,9 @@ export type Genre =
   | "Romance"
   | "Animation"
   | "Horror"
-  | "Adventure";
+  | "Adventure"
+  | "Fantasy"
+  | "Western";
 
 /** Who supplied the title: licensed by Streamax or uploaded by a creator. */
 export type TitleSource =
